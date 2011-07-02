@@ -1,5 +1,5 @@
 (defproject appengine-magic "0.4.2"
-  :description "Google App Engine library for Clojure."
+  :description "Google App Engine library for Clojure (with Vaadin support)."
   :min-lein-version "1.5.0"
   :repositories {"releases" "http://appengine-magic-mvn.googlecode.com/svn/releases/"
                  "snapshots" "http://appengine-magic-mvn.googlecode.com/svn/snapshots/"}
@@ -11,6 +11,7 @@
                  [commons-io "1.4"]
                  [commons-codec "1.4"]
                  [commons-fileupload "1.2.1"]
+                 [com.vaadin/vaadin "6.6.2"]
                  ;; App Engine administrative interface support
                  [tomcat/jasper-runtime "5.0.28"]
                  [org.apache.geronimo.specs/geronimo-jsp_2.1_spec "1.0.1"]

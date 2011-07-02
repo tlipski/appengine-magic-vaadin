@@ -1,7 +1,7 @@
 (in-ns 'appengine-magic.core)
 
 (use 'appengine-magic.local-env-helpers
-     '[appengine-magic.servlet :only [servlet]]
+     '[appengine-magic.servlet :only [servlet vaadin-servlet]]
      '[appengine-magic.swank :only [wrap-swank]]
      '[ring.middleware.file :only [wrap-file]]
      '[ring.middleware.file-info :only [wrap-file-info]])
@@ -55,6 +55,15 @@
                         (wrap-war-static war-root#))
            :war-root war-root#})))
 
+(defmacro def-appengine-vaadin-app [app-var-name vaadin-fn & {:keys [war-root]}]
+  `(def ~app-var-name
+        (let [vaadin-fn# ~vaadin-fn
+              war-root-arg# ~war-root
+              war-root# (if (nil? war-root-arg#)
+                            (default-war-root)
+                            war-root-arg#)]
+          {:vaadin-fn vaadin-fn#
+           :war-root war-root#})))
 
 (defn make-appengine-request-environment-filter []
   (reify javax.servlet.Filter
@@ -81,10 +90,10 @@
 
 (defonce *server* (atom nil))
 
-
-(defn start [appengine-app & {:keys [port join?] :or {port 8080, join? false}}]
+(defn start [appengine-app & {:keys [port join?] :or {port 8182, join? false}}]
+  (.println System/out appengine-app)
   (let [war-root (java.io.File. (:war-root appengine-app))
-        handler-servlet (servlet (:handler appengine-app))]
+        handler-servlet (if (:vaadin-fn appengine-app) (vaadin-servlet (:vaadin-fn appengine-app)) (servlet (:handler appengine-app)))]
     (appengine-init war-root port)
     (reset!
      *server*
@@ -92,7 +101,7 @@
       {"/*" [(make-appengine-request-environment-filter)
              (com.google.apphosting.utils.servlet.TransactionCleanupFilter.)
              (com.google.appengine.api.blobstore.dev.ServeBlobFilter.)]}
-      {"/" handler-servlet
+      {"/*" handler-servlet
        ;; These mappings are from webdefault.xml in appengine-local-runtime-*.jar.
        "/_ah/login" (com.google.appengine.api.users.dev.LocalLoginServlet.)
        "/_ah/logout" (com.google.appengine.api.users.dev.LocalLogoutServlet.)
@@ -135,6 +144,6 @@
     (reset! *server* nil)))
 
 
-(defn serve [appengine-app & {:keys [port] :or {port 8080}}]
+(defn serve [appengine-app & {:keys [port] :or {port 8182}}]
   (stop)
   (start appengine-app :port port))

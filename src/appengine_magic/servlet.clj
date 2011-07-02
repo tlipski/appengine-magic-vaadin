@@ -101,8 +101,31 @@
         (throw (RuntimeException. "handler returned nil (no response map)")))
       (adapt-servlet-response response response-map))))
 
-
 (defn servlet [ring-handler]
   (proxy [HttpServlet] []
     (service [^HttpServletRequest request, ^HttpServletResponse response]
       ((make-servlet-service-method ring-handler) this request response))))
+
+(defn vaadin-servlet [application-fn]
+  (.println System/out "TT1")
+  (.println System/out application-fn)
+  (.println System/out "TT2")
+  (proxy [com.vaadin.terminal.gwt.server.GAEApplicationServlet] []
+    (getApplicationClass [] (class com.vaadin.Application))
+    (init [^javax.servlet.ServletConfig servletConfig]
+      (proxy-super init
+        (proxy [javax.servlet.ServletConfig] []
+          (getServletName [] (.getServletName servletConfig))
+          (getServletContext [] (.getServletContext servletConfig))
+          (getInitParameterNames [] (.getInitParameterNames servletConfig))
+          (getInitParameter [key]
+            (if (.equals "application" key)
+              (.getName (class com.vaadin.Application)))))))
+    (getNewApplication [^HttpServletRequest request]
+      (let [app (apply application-fn nil)]
+        (.println System/out "test2")
+        (.println System/out application-fn)
+        (.println System/out app)
+        (.println System/out "test3")
+        app
+        ))))
