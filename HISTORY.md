@@ -1,3 +1,9 @@
+## 0.4.2-vaadin.0.1 Vaadin branch (2011-07-02)
+* Basic support of Vaadin applications
+* Added sample code used to load Vaadin code (to be removed when everything works and deploys to GAE correctly)
+* Workaround to use (proxy) and (fn) results in Vaadin code - set *compile-files* to true and update classpath accordingly
+* REPL support still available
+
 ## 0.4.2 (2011-06-21)
 
 * Basic support for App Engine SDK 1.5.1.

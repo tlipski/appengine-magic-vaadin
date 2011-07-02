@@ -1,4 +1,4 @@
-(defproject appengine-magic "0.4.2"
+(defproject appengine-magic "0.4.2.vaadin-0.1"
   :description "Google App Engine library for Clojure (with Vaadin support)."
   :min-lein-version "1.5.0"
   :repositories {"releases" "http://appengine-magic-mvn.googlecode.com/svn/releases/"
