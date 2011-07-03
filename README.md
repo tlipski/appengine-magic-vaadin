@@ -51,34 +51,32 @@ To see changes entered in REPL while in a dev mode, remember to use ?restartAppl
 All attempts have been made to ensure backwards compatibility, especially - ring support. But of course Vaadin support
 has highest priority here.
 
+The sample app consists of:
 
-Sample app consists of:
-
-1. project.clj:
+project.clj:
 
     (defproject clj_gae_vaadin "0.0.1"
-        :description "Example app for deployoing Vaadin and Clojure on Google App Engine"
-        :aot [clj_gae_vaadin.application clj_gae_vaadin.application-servlet]
-        :dependencies [[appengine-magic "0.4.2.vaadin-0.2"]]
-        :dev-dependencies []
-        :compile-path "war/WEB-INF/classes"
-        :library-path "war/WEB-INF/lib")
+      :description "Example app for deployoing Vaadin and Clojure on Google App Engine"
+      :aot [clj_gae_vaadin.application clj_gae_vaadin.application-servlet]
+      :dependencies [[appengine-magic "0.4.2.vaadin-0.2"]]
+      :dev-dependencies []
+      :compile-path "war/WEB-INF/classes"
+      :library-path "war/WEB-INF/lib")
 
-2. script to set up local dev environment with REPL (src/local_dev.clj):
+script to set up local dev environment with REPL (src/local_dev.clj):
 
     (require '[appengine-magic.core])
-
     (in-ns 'clojure.core)
     (def *compile-files* true)
     (def *compile-path* "war/WEB-INF/classes")
-
     (in-ns 'user)
     (require '[appengine-magic.vaadin_servlet])
     (require '[clj_gae_vaadin.application_servlet])
     (appengine-magic.core/def-appengine-servlet-app v1 (new clj_gae_vaadin.application_servlet))
     (appengine-magic.core/serve v1)
 
-3. local application files:
+local application files:
+
     ;src/clj_gae_vaadin/application_servlet.clj
     (ns clj_gae_vaadin.application-servlet
       (:require
@@ -88,7 +86,6 @@ Sample app consists of:
         :name clj_gae_vaadin.application_servlet
         :prefix ext-
         :extends appengine_magic.vaadin_servlet))
-
     (defn ext-getNewApplication
       [this request]
       (clj_gae_vaadin.application/main))
@@ -115,7 +112,7 @@ Sample app consists of:
                     (.addListener (proxy [com.vaadin.ui.Button$ClickListener] []
                       (buttonClick [event] (. (. app (getMainWindow)) (showNotification "test")))))))))))))
 
-4. and of course, App Engine descriptors:
+and of course, App Engine descriptors:
 
 war/WEB-INF/appengine-web.xml (i am not sure about threadsafe attribute yet):
 
