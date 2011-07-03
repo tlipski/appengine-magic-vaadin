@@ -55,14 +55,14 @@
                         (wrap-war-static war-root#))
            :war-root war-root#})))
 
-(defmacro def-appengine-vaadin-app [app-var-name vaadin-fn & {:keys [war-root]}]
+(defmacro def-appengine-servlet-app [app-var-name servlet & {:keys [war-root]}]
   `(def ~app-var-name
-        (let [vaadin-fn# ~vaadin-fn
+        (let [servlet# ~servlet
               war-root-arg# ~war-root
               war-root# (if (nil? war-root-arg#)
                             (default-war-root)
                             war-root-arg#)]
-          {:vaadin-fn vaadin-fn#
+          {:servlet servlet#
            :war-root war-root#})))
 
 (defn make-appengine-request-environment-filter []
@@ -91,9 +91,8 @@
 (defonce *server* (atom nil))
 
 (defn start [appengine-app & {:keys [port join?] :or {port 8182, join? false}}]
-  (.println System/out appengine-app)
   (let [war-root (java.io.File. (:war-root appengine-app))
-        handler-servlet (if (:vaadin-fn appengine-app) (vaadin-servlet (:vaadin-fn appengine-app)) (servlet (:handler appengine-app)))]
+        handler-servlet (if (:servlet appengine-app) (:servlet appengine-app) (servlet (:handler appengine-app)))]
     (appengine-init war-root port)
     (reset!
      *server*

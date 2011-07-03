@@ -107,9 +107,6 @@
       ((make-servlet-service-method ring-handler) this request response))))
 
 (defn vaadin-servlet [application-fn]
-  (.println System/out "TT1")
-  (.println System/out application-fn)
-  (.println System/out "TT2")
   (proxy [com.vaadin.terminal.gwt.server.GAEApplicationServlet] []
     (getApplicationClass [] (class com.vaadin.Application))
     (init [^javax.servlet.ServletConfig servletConfig]
@@ -123,9 +120,5 @@
               (.getName (class com.vaadin.Application)))))))
     (getNewApplication [^HttpServletRequest request]
       (let [app (apply application-fn nil)]
-        (.println System/out "test2")
-        (.println System/out application-fn)
-        (.println System/out app)
-        (.println System/out "test3")
         app
         ))))

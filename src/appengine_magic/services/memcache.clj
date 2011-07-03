@@ -5,7 +5,8 @@
             [appengine-magic.services.datastore :as ds])
   (:import [com.google.appengine.api.memcache MemcacheService MemcacheServiceFactory
             MemcacheService$SetPolicy]
-           appengine_magic.services.datastore.EntityProtocol))
+           ;appengine_magic.services.datastore.EntityProtocol
+    ))
 
 
 (defonce *memcache-service* (atom nil))
@@ -74,7 +75,7 @@
 
 (defn- to-entity-cast [value]
   (if (and (= :interactive (core/appengine-environment-type))
-           (instance? EntityProtocol value))
+           (instance? appengine_magic.services.datastore.EntityProtocol value))
       (let [obj-meta (merge (meta value) {:type (.getName (class value))})
             obj-map (into {} value)]
         (with-meta obj-map obj-meta))

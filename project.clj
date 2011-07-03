@@ -21,9 +21,9 @@
                  ;; main App Engine libraries
                  [com.google.appengine/appengine-api-1.0-sdk "1.5.1"]
                  [com.google.appengine/appengine-api-labs "1.5.1"]
-                 [com.google.appengine/appengine-api-stubs "1.5.1"]
-                 [com.google.appengine/appengine-local-runtime "1.5.1"]
-                 [com.google.appengine/appengine-local-runtime-shared "1.5.1"]
-                 [com.google.appengine/appengine-testing "1.5.1"]
                  [com.google.appengine/appengine-tools-api "1.5.1"]]
-  :dev-dependencies [[swank-clojure "1.3.1" :exclusions [org.clojure/clojure]]])
+  :dev-dependencies [[swank-clojure "1.3.1" :exclusions [org.clojure/clojure]]
+                     [com.google.appengine/appengine-api-stubs "1.5.1"]
+                     [com.google.appengine/appengine-local-runtime "1.5.1"]
+                     [com.google.appengine/appengine-local-runtime-shared "1.5.1"]
+                     [com.google.appengine/appengine-testing "1.5.1"]])
