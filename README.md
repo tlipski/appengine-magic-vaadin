@@ -51,6 +51,99 @@ To see changes entered in REPL while in a dev mode, remember to use ?restartAppl
 All attempts have been made to ensure backwards compatibility, especially - ring support. But of course Vaadin support
 has highest priority here.
 
+
+Sample app consists of:
+
+1. project.clj:
+
+    (defproject clj_gae_vaadin "0.0.1"
+        :description "Example app for deployoing Vaadin and Clojure on Google App Engine"
+        :aot [clj_gae_vaadin.application clj_gae_vaadin.application-servlet]
+        :dependencies [[appengine-magic "0.4.2.vaadin-0.2"]]
+        :dev-dependencies []
+        :compile-path "war/WEB-INF/classes"
+        :library-path "war/WEB-INF/lib")
+
+2. script to set up local dev environment with REPL (src/local_dev.clj):
+
+    (require '[appengine-magic.core])
+
+    (in-ns 'clojure.core)
+    (def *compile-files* true)
+    (def *compile-path* "war/WEB-INF/classes")
+
+    (in-ns 'user)
+    (require '[appengine-magic.vaadin_servlet])
+    (require '[clj_gae_vaadin.application_servlet])
+    (appengine-magic.core/def-appengine-servlet-app v1 (new clj_gae_vaadin.application_servlet))
+    (appengine-magic.core/serve v1)
+
+3. local application files:
+    ;src/clj_gae_vaadin/application_servlet.clj
+    (ns clj_gae_vaadin.application-servlet
+      (:require
+        [appengine_magic.vaadin_servlet]
+        [clj_gae_vaadin.application])
+      (:gen-class
+        :name clj_gae_vaadin.application_servlet
+        :prefix ext-
+        :extends appengine_magic.vaadin_servlet))
+
+    (defn ext-getNewApplication
+      [this request]
+      (clj_gae_vaadin.application/main))
+    ;src/clj_gae_vaadin/application.clj
+    (ns clj_gae_vaadin.application
+      "Local app"
+      (:import [com.vaadin Application])
+      (:require [appengine-magic.services.memcache]))
+
+    (defn main []
+      (proxy [com.vaadin.Application] []
+        (init []
+          (when (not (appengine-magic.services.memcache/get "test123"))
+            (appengine-magic.services.memcache/put! "test123" 1))
+          (let [app this]
+            (.setMainWindow this
+              (doto (new com.vaadin.ui.Window (str "Test no. "
+                (appengine-magic.services.memcache/increment! "test123" 1)))
+               ; ))
+                (.addComponent
+                  (new com.vaadin.ui.Label "Hello Vaadin/LISP user!"))
+                (.addComponent
+                  (doto (new com.vaadin.ui.Button "button")
+                    (.addListener (proxy [com.vaadin.ui.Button$ClickListener] []
+                      (buttonClick [event] (. (. app (getMainWindow)) (showNotification "test")))))))))))))
+
+4. and of course, App Engine descriptors:
+
+war/WEB-INF/appengine-web.xml (i am not sure about threadsafe attribute yet):
+
+    <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+        <application>your_app_id</application>
+        <version>1</version>
+        <sessions-enabled>true</sessions-enabled>
+        <threadsafe>true</threadsafe>
+    </appengine-web-app>
+
+war/WEB-INF/web.xml:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <web-app
+            xmlns="http://java.sun.com/xml/ns/javaee"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+            version="2.5">
+        <display-name>GAE Vaadin Clojure</display-name>
+        <servlet>
+            <servlet-name>vaadin</servlet-name>
+            <servlet-class>clj_gae_vaadin.application_servlet</servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>vaadin</servlet-name>
+            <url-pattern>/*</url-pattern>
+        </servlet-mapping>
+    </web-app>
 ## Overview
 
 To use appengine-magic effectively, you need the following:

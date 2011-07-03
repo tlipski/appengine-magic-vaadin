@@ -1,3 +1,8 @@
+## 0.4.2-vaadin.0.1 Vaadin branch (2011-07-03)
+* GAE dev mode and deployment seems to work
+* fixed memcache classloading issue
+* removed sample app (but pasted the code into README.md)
+
 ## 0.4.2-vaadin.0.1 Vaadin branch (2011-07-02)
 * Basic support of Vaadin applications
 * Added sample code used to load Vaadin code (to be removed when everything works and deploys to GAE correctly)
