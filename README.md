@@ -89,6 +89,7 @@ local application files:
     (defn ext-getNewApplication
       [this request]
       (clj_gae_vaadin.application/main))
+
     ;src/clj_gae_vaadin/application.clj
     (ns clj_gae_vaadin.application
       "Local app"
@@ -104,7 +105,6 @@ local application files:
             (.setMainWindow this
               (doto (new com.vaadin.ui.Window (str "Test no. "
                 (appengine-magic.services.memcache/increment! "test123" 1)))
-               ; ))
                 (.addComponent
                   (new com.vaadin.ui.Label "Hello Vaadin/LISP user!"))
                 (.addComponent
