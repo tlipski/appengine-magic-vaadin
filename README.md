@@ -74,8 +74,9 @@ script to set up local dev environment with REPL (src/local_dev.clj):
     (in-ns 'user)
     (require '[appengine-magic.vaadin_servlet])
     (require '[clj_gae_vaadin.application_servlet])
-    (appengine-magic.core/def-appengine-servlet-app v1 (new clj_gae_vaadin.application_servlet))
-    (appengine-magic.core/serve v1)
+    (appengine-magic.core/def-appengine-servlet-app v1 (new clj_gae_vaadin.application_servlet) :path "/test/*")
+    (appengine-magic.core/def-appengine-servlet-app v2 (new appengine_magic.vaadin_servlet) :path "/VAADIN/*") ;remember to support /VAADIN/* request path with a Vaadin servlet
+    (appengine-magic.core/serve [v1 v2])
 
 local application files:
 
